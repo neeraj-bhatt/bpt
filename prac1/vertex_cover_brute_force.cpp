@@ -6,6 +6,7 @@
 #include <fstream>
 #include <algorithm>
 #include <numeric>
+#include <cstdlib> // for system calls
 
 using namespace std;
 
@@ -21,7 +22,8 @@ bool is_vertex_cover(const set<int>& vertex_cover, const vector<pair<int, int>>&
 
 // Function to write result in ouput.txt file
 void generate_output_file(int &min_cover_size, set<int> best_cover, double time_taken){
-    ofstream outfile("output.text");
+    cout << "Generating Output file." << endl;
+    ofstream outfile("output.txt");
     if (!outfile.is_open()) {
         cerr << "Error: Could not open output.txt for writing.\n";
     }
@@ -32,11 +34,13 @@ void generate_output_file(int &min_cover_size, set<int> best_cover, double time_
     }
     outfile << endl;
     outfile << "Running time: " << time_taken << " seconds" << endl;
-    cout << "Results written to ouput file" << endl;
+    outfile.close();
+    cout << "Results written to ouput.txt." << endl;
 }
 
 // Function to find the minimum vertex cover using brute force
 void brute_force_vertex_cover(int n, const vector<pair<int, int>>& edges) {
+    cout << "\nCalculating Vertex Cover..." << endl;
     // start measuring time
     clock_t start_time = clock();
     
@@ -97,11 +101,34 @@ int main() {
     // Read the graph from the file
     int n, m;
     vector<pair<int, int>> edges;
+
+    cout << "Generating ramdom Edges using Python..." << endl;
+    int result = system("python3 graph.py generate input.txt");
+    if(result != 0){
+        cerr << "error running graph generator Python script" << endl;
+        return 1;
+    }
+    cout << "Random Edges generated." << endl;
+
+    cout << "\nDrawing Graph..." << endl;;
+    result = system("python3 graph.py draw input.txt");
+    if(result != 0){
+        cerr << "error running draw graph Python script" << endl;
+        return 1;
+    }
+    cout << "Graph Drawn." << endl;
     
     read_graph_from_file(filename, n, m, edges);
 
     // Find the minimum vertex cover using brute force
     brute_force_vertex_cover(n, edges);
-    
+
+    cout << "\nDrawing Vertex Cover Graph..." << endl;
+    result = system("python3 graph.py vc input.txt output.txt");
+    if(result != 0){
+        cerr << "error running vertex cover graph Python script" << endl;
+        return 1;
+    }
+
     return 0;
 }
