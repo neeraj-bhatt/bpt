@@ -2,10 +2,8 @@
 #include <vector>
 #include <set>
 #include <ctime>
-#include <iterator>
 #include <fstream>
 #include <algorithm>
-#include <numeric>
 #include <cstdlib> // for system calls
 
 using namespace std;
@@ -38,6 +36,22 @@ void generate_output_file(int &min_cover_size, set<int> best_cover, double time_
     cout << "Results written to ouput.txt." << endl;
 }
 
+// Helper function to generate the next combination
+bool next_combination(vector<int>& combination, int n) {
+    int size = combination.size();
+    int i = size - 1;
+    while (i >= 0 && combination[i] == n - size + i) {
+        i--;
+    }
+    if (i < 0) return false;  // No more combinations
+
+    combination[i]++;
+    for (int j = i + 1; j < size; j++) {
+        combination[j] = combination[j - 1] + 1;
+    }
+    return true;
+}
+
 // Function to find the minimum vertex cover using brute force
 void brute_force_vertex_cover(int n, const vector<pair<int, int>>& edges) {
     cout << "\nCalculating Vertex Cover..." << endl;
@@ -45,31 +59,36 @@ void brute_force_vertex_cover(int n, const vector<pair<int, int>>& edges) {
     clock_t start_time = clock();
     
     int min_cover_size = n;  // The maximum size is n
-    set<int> best_cover;
+    set<int> vertex_cover;
+
+    vector<int> vertices(n);
+    for(int i=0; i<n; i++)
+        vertices[i] = i+1;
 
     // Iterate through all possible subsets of vertices
     for (int size = 1; size <= n; size++) {
-        vector<int> vertices(n);
-        iota(vertices.begin(), vertices.end(), 0);  // Generate a list of vertices [0, 1, ..., n-1]
+        bool found_cover = false;
 
+        vector<int> combination(size);
+        for(int i=0; i<size; i++)
+            combination[i] = i;
+    
         do {
-            set<int> current_cover;
+            set<int> current_combination;
             for (int i = 0; i < size; i++) {
-                current_cover.insert(vertices[i]);
+                current_combination.insert(vertices[combination[i]]);
             }
 
-            // Check if current_cover is a vertex cover
-            if (is_vertex_cover(current_cover, edges)) {
-                if (current_cover.size() < min_cover_size) {
-                    min_cover_size = current_cover.size();
-                    best_cover = current_cover;
-                }
-                break; // No need to check larger subsets for this size
+            if (is_vertex_cover(current_combination, edges)) {
+                min_cover_size = current_combination.size();
+                vertex_cover = current_combination;
+                found_cover = true;
+                break;  // No need to check larger subsets
             }
 
-        } while (next_permutation(vertices.begin(), vertices.end()));
+        } while (next_combination(combination, n));
 
-        if (min_cover_size == size) break;  // If we found the smallest vertex cover, stop
+        if (found_cover) break;  // If we found the smallest vertex cover, stop
     }
     
     clock_t end_time = clock();
@@ -77,7 +96,7 @@ void brute_force_vertex_cover(int n, const vector<pair<int, int>>& edges) {
     double time_taken = double(end_time - start_time) / CLOCKS_PER_SEC;
     
     // Output the result
-    generate_output_file(min_cover_size, best_cover, time_taken);
+    generate_output_file(min_cover_size, vertex_cover, time_taken);
 }
 
 // Function to read the graph from a file
