@@ -1,3 +1,4 @@
+// took the help of chatgpt for various built-in methods
 #include <iostream>
 #include <vector>
 #include <set>
@@ -36,6 +37,7 @@ void generate_output_file(int &min_cover_size, set<int> best_cover, double time_
     cout << "Results written to ouput.txt." << endl;
 }
 
+// used chatgpt to generate this method
 // Helper function to generate the next combination
 bool next_combination(vector<int>& combination, int n) {
     int size = combination.size();
@@ -52,6 +54,7 @@ bool next_combination(vector<int>& combination, int n) {
     return true;
 }
 
+// used chatgpt here for various built-in method
 // Function to find the minimum vertex cover using brute force
 void brute_force_vertex_cover(int n, const vector<pair<int, int>>& edges) {
     cout << "\nCalculating Vertex Cover..." << endl;

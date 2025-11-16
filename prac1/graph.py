@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import random as rd
 import sys
 
+# used chatgpt to generate random edges in this method
 # generate random pair of m edges given n, m value in input.txt file
 def generate_random_graph_edges(input_file: str):
 
@@ -79,6 +80,7 @@ def draw_best_vertex_cover_graph(input_file: str, output_file: str):
     nx.draw(G, node_color=node_color, with_labels=True, node_size=500, font_size=10)
     plt.show()
 
+# used chatgpt to learn about use of sys this way
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         if sys.argv[1] == 'generate':
