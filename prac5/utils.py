@@ -25,26 +25,38 @@ def farthest_first_k_center_2_factor(X, k):
     return np.array(centers)
 
 # Function to run the experiment on five real dataset
-def run_experiment(name, X, k):
-    print(f"\n========== {name} ==========")
-    print("n_samples:", X.shape[0], "dim:", X.shape[1])
+def run_experiment(name, X, k, filename="output.txt"):
+    with open(filename, "a") as f:   # append mode
+        f.write(f"\n========== {name} ==========\n")
+        f.write(f"n_samples: {X.shape[0]}  dim: {X.shape[1]}\n")
 
-    # Heuristic using KMeans
-    t0 = time()
-    kmeans = MiniBatchKMeans(n_clusters=k, random_state=42).fit(X)
-    t1 = time()
-    km_cost = k_center_cost(X, kmeans.cluster_centers_)
+        # Heuristic using KMeans
+        t0 = time()
+        kmeans = MiniBatchKMeans(n_clusters=k, random_state=42).fit(X)
+        t1 = time()
+        km_cost = k_center_cost(X, kmeans.cluster_centers_)
+        km_time = t1-t0
 
-    print("\nKMeans Heuristic:")
-    print("   Cost:", km_cost)
-    print("   Time:", t1 - t0)
+        f.write("\nKMeans Heuristic:\n")
+        f.write(f"   Cost: {km_cost}\n")
+        f.write(f"   Time: {km_time}\n")
 
-    # Greedy 2-Approx
-    t0 = time()
-    centers = farthest_first_k_center_2_factor(X, k)
-    t1 = time()
-    ff_cost = k_center_cost(X, centers)
+        # Greedy 2-Approx
+        t0 = time()
+        centers = farthest_first_k_center_2_factor(X, k)
+        t1 = time()
+        app_cost = k_center_cost(X, centers)
+        app_time = t1-t0
 
-    print("\nGreedy 2-Approx:")
-    print("   Cost:", ff_cost)
-    print("   Time:", t1 - t0)
+        f.write("\nGreedy 2-Approx:\n")
+        f.write(f"   Cost: {app_cost}\n")
+        f.write(f"   Time: {t1 - t0}\n")
+
+    return {
+        "name": name,
+        "kmeans_cost": km_cost,
+        "kmeans_time": km_time,
+        "ff_cost": app_cost,
+        "ff_time": app_time
+    }
+

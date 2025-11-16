@@ -2,6 +2,7 @@ from utils import k_center_cost, farthest_first_k_center_2_factor, run_experimen
 from sklearn.cluster import MiniBatchKMeans
 from sklearn.datasets import load_iris, load_wine, load_breast_cancer, load_digits, fetch_california_housing
 from sklearn.datasets import make_blobs
+import matplotlib.pyplot as plt
 from time import time
 
 
@@ -39,7 +40,8 @@ datasets = [
     ("CaliforniaHousing", fetch_california_housing().data, 6),
 ]
 
-
-print("\n---------------Experiment on 5 Real Dataset---------------")
+open("output.txt", "w").close()
+results = []
 for name, X, k in datasets:
-    run_experiment(name, X, k)
+    res = run_experiment(name, X, k)
+    results.append(res)
