@@ -9,6 +9,37 @@ def k_center_cost(X, centers):
     D = pairwise_distances(X, centers)
     return np.min(D, axis=1).max()
 
+# Local Search Heuristic
+def k_center_local_search(X, k, max_iter=20):
+    # start with greedy solution
+    from copy import deepcopy
+    current_centers = farthest_first_k_center_2_factor(X, k)
+
+    current_cost = k_center_cost(X, current_centers)
+    
+    for _ in range(max_iter):
+        improved = False
+        for i in range(k):
+            for j in range(len(X)):
+                new_centers = deepcopy(current_centers)
+                new_centers[i] = X[j]  # swap center i with point j
+                
+                new_cost = k_center_cost(X, new_centers)
+                if new_cost < current_cost:
+                    current_cost = new_cost
+                    current_centers = new_centers
+                    improved = True
+                    break
+            if improved:
+                break
+        
+        if not improved:
+            break
+        
+    return current_centers, current_cost
+
+
+
 # Greedy 2-approximation: Farthest-First Traversal
 def farthest_first_k_center_2_factor(X, k):
     n = X.shape[0]
