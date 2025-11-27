@@ -61,16 +61,16 @@ def run_experiment(name, X, k, filename="output.txt"):
         f.write(f"\n========== {name} ==========\n")
         f.write(f"n_samples: {X.shape[0]}  dim: {X.shape[1]}\n")
 
-        # Heuristic using KMeans
+        # Heuristic
         t0 = time()
         localSearchcenters = k_center_local_search(X, k)
         t1 = time()
-        km_cost = k_center_cost(X, localSearchcenters)
-        km_time = t1-t0
+        ls_cost = k_center_cost(X, localSearchcenters)
+        ls_time = t1-t0
 
         f.write("\nLocal Search Heuristic:\n")
-        f.write(f"   Cost: {km_cost}\n")
-        f.write(f"   Time: {km_time}\n")
+        f.write(f"   Cost: {ls_cost}\n")
+        f.write(f"   Time: {ls_time}\n")
 
         # Greedy 2-Approx
         t0 = time()
@@ -81,12 +81,12 @@ def run_experiment(name, X, k, filename="output.txt"):
 
         f.write("\nGreedy 2-Approx:\n")
         f.write(f"   Cost: {app_cost}\n")
-        f.write(f"   Time: {t1 - t0}\n")
+        f.write(f"   Time: {app_cost}\n")
 
     return {
         "name": name,
-        "kmeans_cost": km_cost,
-        "kmeans_time": km_time,
+        "localsearch_cost": ls_cost,
+        "localsearch_time": ls_time,
         "ff_cost": app_cost,
         "ff_time": app_time
     }

@@ -1,5 +1,4 @@
 from utils import k_center_cost, farthest_first_k_center_2_factor, k_center_local_search, run_experiment
-from sklearn.cluster import MiniBatchKMeans
 from sklearn.datasets import load_iris, load_wine, load_breast_cancer, load_digits, fetch_california_housing
 from sklearn.datasets import make_blobs
 import matplotlib.pyplot as plt
