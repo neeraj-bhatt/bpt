@@ -40,8 +40,6 @@ datasets = [
     ("CaliforniaHousing", resample(fetch_california_housing().data, n_samples=3000, random_state=42), 6),
 ]
 
-open("output.txt", "w").close()
-results = []
+
 for name, X, k in datasets:
-    res = run_experiment(name, X, k)
-    results.append(res)
+    run_experiment(name, X, k)

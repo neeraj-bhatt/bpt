@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 from sklearn.metrics import pairwise_distances
 from sklearn.cluster import MiniBatchKMeans
 from time import time
@@ -55,39 +56,45 @@ def farthest_first_k_center_2_factor(X, k):
 
     return np.array(centers)
 
+
+# Initialize an empty DataFrame
+results_df = pd.DataFrame(columns=[
+    "name", "n_samples", "dim",
+    "localsearch_cost", "localsearch_time",
+    "ff_cost", "ff_time"
+])
+
 # Function to run the experiment on five real dataset
-def run_experiment(name, X, k, filename="output.txt"):
-    with open(filename, "a") as f:   # append mode
-        f.write(f"\n========== {name} ==========\n")
-        f.write(f"n_samples: {X.shape[0]}  dim: {X.shape[1]}\n")
+def run_experiment(name, X, k):
+    # Heuristic
+    t0 = time()
+    localSearchcenters = k_center_local_search(X, k)
+    t1 = time()
+    ls_cost = k_center_cost(X, localSearchcenters)
+    ls_time = t1 - t0
 
-        # Heuristic
-        t0 = time()
-        localSearchcenters = k_center_local_search(X, k)
-        t1 = time()
-        ls_cost = k_center_cost(X, localSearchcenters)
-        ls_time = t1-t0
+    # Greedy 2-Approx
+    t0 = time()
+    greedyCenters = farthest_first_k_center_2_factor(X, k)
+    t1 = time()
+    ff_cost = k_center_cost(X, greedyCenters)
+    ff_time = t1 - t0
 
-        f.write("\nLocal Search Heuristic:\n")
-        f.write(f"   Cost: {ls_cost}\n")
-        f.write(f"   Time: {ls_time}\n")
-
-        # Greedy 2-Approx
-        t0 = time()
-        greedyCenters = farthest_first_k_center_2_factor(X, k)
-        t1 = time()
-        app_cost = k_center_cost(X, greedyCenters)
-        app_time = t1-t0
-
-        f.write("\nGreedy 2-Approx:\n")
-        f.write(f"   Cost: {app_cost}\n")
-        f.write(f"   Time: {app_cost}\n")
-
-    return {
+    # Create a dictionary for this row
+    row = {
         "name": name,
+        "n_samples": X.shape[0],
+        "dim": X.shape[1],
         "localsearch_cost": ls_cost,
         "localsearch_time": ls_time,
-        "ff_cost": app_cost,
-        "ff_time": app_time
+        "ff_cost": ff_cost,
+        "ff_time": ff_time
     }
+
+    # Append to the DataFrame
+    global results_df
+    results_df = pd.concat([results_df, pd.DataFrame([row])], ignore_index=True)
+    results_df.to_csv("results5.csv", index=False)
+
+
 

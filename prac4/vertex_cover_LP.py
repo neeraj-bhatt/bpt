@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import random as rd
 from scipy.optimize import linprog
 
@@ -90,10 +91,27 @@ def program(nodes):
 
     return approx_factor
 
-with open('output.txt', 'w') as ofile:
-    ofile.write('------------Approximation Factor Summary------------\n')
+# Initialize an empty list to store all results
+all_results = []
+
+# Loop over your nodes
 for i in range(10, 21, 10):
     results = program(i)
     for res in results:
-        with open('output.txt', 'a') as ofile:
-            ofile.write(f"Nodes : {i} | Edges: {res['edges']:3d} | Greedy Factor: {res['greedy_factor']:.3f} | LP Rounding Factor: {res['lp_rounded_factor']:.3f}\n")
+        all_results.append({
+            "Nodes": i,
+            "Edges": res["edges"],
+            "Greedy_Factor": res["greedy_factor"],
+            "LP_Rounded_Factor": res["lp_rounded_factor"]
+        })
+
+# Convert to a DataFrame
+df = pd.DataFrame(all_results)
+
+# Optionally, reorder columns
+df = df[["Nodes", "Edges", "Greedy_Factor", "LP_Rounded_Factor"]]
+
+# Save to CSV
+df.to_csv("results4.csv", index=False)
+
+print("CSV file generated: approximation_summary.csv")
