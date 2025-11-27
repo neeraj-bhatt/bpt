@@ -2,6 +2,7 @@ import numpy as np
 from sklearn.metrics import pairwise_distances
 from sklearn.cluster import MiniBatchKMeans
 from time import time
+from copy import deepcopy
 
 
 # Compute k-center cost: max distance from any point to the closest chosen center
@@ -12,7 +13,6 @@ def k_center_cost(X, centers):
 # Local Search Heuristic
 def k_center_local_search(X, k, max_iter=20):
     # start with greedy solution
-    from copy import deepcopy
     current_centers = farthest_first_k_center_2_factor(X, k)
 
     current_cost = k_center_cost(X, current_centers)
@@ -36,7 +36,7 @@ def k_center_local_search(X, k, max_iter=20):
         if not improved:
             break
         
-    return current_centers, current_cost
+    return current_centers
 
 
 
@@ -63,20 +63,20 @@ def run_experiment(name, X, k, filename="output.txt"):
 
         # Heuristic using KMeans
         t0 = time()
-        kmeans = MiniBatchKMeans(n_clusters=k, random_state=42).fit(X)
+        localSearchcenters = k_center_local_search(X, k)
         t1 = time()
-        km_cost = k_center_cost(X, kmeans.cluster_centers_)
+        km_cost = k_center_cost(X, localSearchcenters)
         km_time = t1-t0
 
-        f.write("\nKMeans Heuristic:\n")
+        f.write("\nLocal Search Heuristic:\n")
         f.write(f"   Cost: {km_cost}\n")
         f.write(f"   Time: {km_time}\n")
 
         # Greedy 2-Approx
         t0 = time()
-        centers = farthest_first_k_center_2_factor(X, k)
+        greedyCenters = farthest_first_k_center_2_factor(X, k)
         t1 = time()
-        app_cost = k_center_cost(X, centers)
+        app_cost = k_center_cost(X, greedyCenters)
         app_time = t1-t0
 
         f.write("\nGreedy 2-Approx:\n")
